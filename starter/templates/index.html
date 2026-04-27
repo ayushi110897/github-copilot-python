@@ -1,18 +1,87 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sudoku Game</title>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
+
 <body>
-  <h1>Sudoku Game</h1>
-  <div id="sudoku-board"></div>
-  <div class="controls">
-    <button id="new-game">New Game</button>
-    <button id="check-solution">Check Solution</button>
-    <span id="message"></span>
+  <div class="container">
+    <header>
+      <div class="header-top">
+        <h1>Sudoku Game</h1>
+        <button id="dark-mode-toggle" class="btn-icon" type="button" title="Toggle dark mode"
+          aria-label="Switch to dark mode">
+          <span class="icon">🌙</span>
+        </button>
+      </div>
+      <p class="subtitle">Complete the 9x9 grid with numbers 1-9</p>
+      <div class="timer-display">
+        <span class="timer-label">Time:</span>
+        <span id="timer" class="timer">00:00</span>
+      </div>
+    </header>
+
+    <div class="game-section">
+      <div class="controls">
+        <div class="control-group">
+          <label for="difficulty">Difficulty:</label>
+          <select id="difficulty" aria-label="Select Sudoku difficulty">
+            <option value="easy">Easy (35 clues)</option>
+            <option value="medium" selected>Medium (27 clues)</option>
+            <option value="hard">Hard (22 clues)</option>
+          </select>
+          <button id="new-game" class="btn btn-primary" type="button" aria-label="Start a new Sudoku game">New
+            Game</button>
+        </div>
+
+        <div class="control-group">
+          <button id="get-hint" class="btn btn-secondary" type="button" aria-label="Get a hint for one empty cell">Get
+            Hint</button>
+          <button id="check-solution" class="btn btn-success" type="button"
+            aria-label="Check the current board against the solution">Check Solution</button>
+          <span id="hints-counter" class="hints-counter">Hints: <strong id="hints-used">0</strong></span>
+        </div>
+
+        <div id="message" class="message" aria-live="polite"></div>
+      </div>
+
+      <div id="sudoku-board" class="sudoku-board" role="grid" aria-label="Sudoku board"></div>
+
+      <section class="number-tracker-section" aria-labelledby="number-tracker-title">
+        <h2 id="number-tracker-title">Number Tracker</h2>
+        <div id="number-tracker" class="number-tracker" aria-label="Remaining digits"></div>
+      </section>
+
+      <section class="leaderboard-section" aria-labelledby="leaderboard-title">
+        <h2 id="leaderboard-title">Top 10 Scoreboard</h2>
+        <div class="leaderboard-table-wrapper">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Time</th>
+                <th scope="col">Difficulty</th>
+                <th scope="col">Hints</th>
+                <th scope="col">Date</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+              <tr>
+                <td colspan="6" class="leaderboard-empty">No scores yet. Solve a puzzle to create the first record.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   </div>
+
   <script src="/static/main.js"></script>
 </body>
+
 </html>

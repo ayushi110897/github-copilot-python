@@ -1,39 +1,50 @@
-from flask import Flask, render_template, jsonify, request
-import sudoku_logic
+from flask import Flask, jsonify, render_template, request
+from routes.game_routes import game_bp
+from services.sudoku_service import create_new_game, validate_board
 
 app = Flask(__name__)
 
-# Keep a simple in-memory store for current puzzle and solution
 CURRENT = {
-    'puzzle': None,
-    'solution': None
+    "puzzle": None,
+    "solution": None,
 }
 
-@app.route('/')
+# Register blueprints
+app.register_blueprint(game_bp)
+
+
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/new')
-def new_game():
-    clues = int(request.args.get('clues', 35))
-    puzzle, solution = sudoku_logic.generate_puzzle(clues)
-    CURRENT['puzzle'] = puzzle
-    CURRENT['solution'] = solution
-    return jsonify({'puzzle': puzzle})
 
-@app.route('/check', methods=['POST'])
-def check_solution():
-    data = request.json
-    board = data.get('board')
-    solution = CURRENT.get('solution')
+@app.route("/new")
+def legacy_new_game():
+    clues = request.args.get("clues", type=int, default=35)
+    difficulty_by_clues = {
+        35: "easy",
+        27: "medium",
+        22: "hard",
+    }
+    difficulty = difficulty_by_clues.get(clues, "easy")
+    puzzle, solution = create_new_game(difficulty)
+    CURRENT["puzzle"] = puzzle
+    CURRENT["solution"] = solution
+    return jsonify({"puzzle": puzzle})
+
+
+@app.route("/check", methods=["POST"])
+def legacy_check_solution():
+    data = request.get_json() or {}
+    board = data.get("board")
+    solution = CURRENT.get("solution")
+
     if solution is None:
-        return jsonify({'error': 'No game in progress'}), 400
-    incorrect = []
-    for i in range(sudoku_logic.SIZE):
-        for j in range(sudoku_logic.SIZE):
-            if board[i][j] != solution[i][j]:
-                incorrect.append([i, j])
-    return jsonify({'incorrect': incorrect})
+        return jsonify({"error": "No game in progress"}), 400
 
-if __name__ == '__main__':
+    incorrect = validate_board(board, solution)
+    return jsonify({"incorrect": incorrect})
+
+
+if __name__ == "__main__":
     app.run(debug=True)
