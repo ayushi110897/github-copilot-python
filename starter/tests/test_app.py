@@ -2,6 +2,7 @@ import pytest
 import sudoku_logic
 from app import CURRENT
 
+
 class TestSudokuLogic:
     def test_puzzle_generation_returns_9x9_grid(self):
         """Test that puzzle generation returns a 9x9 grid."""
@@ -35,22 +36,23 @@ class TestSudokuLogic:
         prefilled_hard = sum(1 for row in puzzle_hard for cell in row if cell != 0)
         assert prefilled_hard == 20
 
+
 class TestAppRoutes:
     def test_new_game_route_returns_http_200(self, client):
         """Test that the /new route returns HTTP 200."""
-        response = client.get('/new')
+        response = client.get("/new")
         assert response.status_code == 200
         data = response.get_json()
-        assert 'puzzle' in data
-        assert len(data['puzzle']) == 9
+        assert "puzzle" in data
+        assert len(data["puzzle"]) == 9
 
     def test_validate_route_correctly_identifies_invalid_moves(self, client):
         """Test that the /check route correctly identifies invalid moves."""
         # First, start a new game
-        response = client.get('/new')
+        response = client.get("/new")
         assert response.status_code == 200
         data = response.get_json()
-        puzzle = data['puzzle']
+        puzzle = data["puzzle"]
 
         # Create a board with some wrong moves
         # For simplicity, change one cell that's prefilled or add wrong number
@@ -67,9 +69,9 @@ class TestAppRoutes:
             break
 
         # Now, post to /check
-        response = client.post('/check', json={'board': board})
+        response = client.post("/check", json={"board": board})
         assert response.status_code == 200
         data = response.get_json()
-        assert 'incorrect' in data
+        assert "incorrect" in data
         # Should have at least one incorrect position
-        assert len(data['incorrect']) > 0
+        assert len(data["incorrect"]) > 0
